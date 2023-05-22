@@ -7,3 +7,5 @@ export enum EnableSnapType {
   disableSnap,
   enableSnap,
 }
+
+export type Timer = ReturnType<typeof setTimeout>;

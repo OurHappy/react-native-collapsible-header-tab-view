@@ -1,15 +1,8 @@
 import React from 'react';
-import {
-  Image,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  RefreshControl,
-  TouchableOpacity,
-} from 'react-native';
+import {Image, StyleSheet, View, Text} from 'react-native';
 import {HScrollView} from 'react-native-collapsible-header-tab-view';
 import staticData from '../config/staticData';
+import type {Timer} from '../types';
 
 interface Props {
   index: number;
@@ -34,7 +27,7 @@ export default class ScrollViewPage extends React.PureComponent<
   State
 > {
   static defaultProps = defaultProps;
-  private mTimer?: NodeJS.Timeout;
+  private mTimer?: Timer;
 
   constructor(props: any) {
     super(props);

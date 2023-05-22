@@ -1,21 +1,14 @@
 import React from 'react';
-import {
-  Text,
-  TouchableOpacity,
-  View,
-  ScrollView,
-  StyleSheet,
-  FlatList,
-} from 'react-native';
+import {Text, TouchableOpacity, View, StyleSheet, FlatList} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 interface Props {
-  navigation: any;
+  navigation?: any;
 }
 import type {TabViewType, EnableSnapType} from './types';
 import staticData from './config/staticData';
-interface State {
+type State = {
   configIndexs: number[];
-}
+};
 export default class MainScreen extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -42,7 +35,7 @@ export default class MainScreen extends React.PureComponent<Props, State> {
     );
   };
 
-  _keyExtractor = (item: any, index: number) => index + '';
+  _keyExtractor = (_item: any, index: number) => index + '';
 
   render() {
     return (
@@ -52,7 +45,7 @@ export default class MainScreen extends React.PureComponent<Props, State> {
             key={'SELECT_' + index}
             title={item.sectionTitle}
             data={item.data}
-            index={this.state.configIndexs[index]}
+            index={this.state.configIndexs[index] || 0}
             onPress={(mI: number) => {
               this.setState(preState => {
                 return {

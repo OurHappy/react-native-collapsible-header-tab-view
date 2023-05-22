@@ -1,11 +1,14 @@
-import {TransitionPresets} from '@react-navigation/stack';
+import {
+  TransitionPresets,
+  type StackNavigationOptions,
+} from '@react-navigation/stack';
 
-const getScreenOptions = () => {
+const getScreenOptions = (): StackNavigationOptions => {
   return {
     headerStyle: {
       backgroundColor: '#ffffff',
-    }, 
-    headerTintColor: '#000000', 
+    },
+    headerTintColor: '#000000',
     headerTitleStyle: {
       fontWeight: 'bold',
     },
