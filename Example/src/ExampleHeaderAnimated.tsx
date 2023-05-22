@@ -5,15 +5,14 @@ import {
     Dimensions,
     Text
 } from 'react-native';
-import { RefreshControlProps } from 'react-native-head-tab-view'
-import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue, interpolate, Extrapolate } from 'react-native-reanimated'
+import type { RefreshControlProps } from 'react-native-collapsible-header-tab-view';
+import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue, interpolate, Extrapolate } from 'react-native-reanimated';
 import { styles } from './styles'
 import { CustomRefreshControl } from './component'
-import { ScrollableTabViewContainer, TabViewContainer } from './component/TabViewBase'
+import { TabViewContainer } from './component/TabViewBase'
 import { useHomeConfig } from './hook'
 
 import staticData from './config/staticData'
-import { TabViewType } from './types'
 
 const G_WIN_WIDTH = Dimensions.get('window').width
 const G_WIN_HEIGHT = Dimensions.get('window').height
@@ -125,7 +124,7 @@ const ExampleHeaderAnimated: React.FC<any> = (props) => {
                 {detail}
             </Text>
             </Animated.View>
-            
+
         </View>
     }
 
@@ -157,14 +156,9 @@ const ExampleHeaderAnimated: React.FC<any> = (props) => {
     }
     return (
         <View style={styles.container}>
-            {
-                tabviewType === TabViewType.default ?
-                    <ScrollableTabViewContainer
-                        {...Props} /> :
-                    <TabViewContainer
-                        {...Props}
-                    />
-            }
+            <TabViewContainer
+                {...Props}
+            />
         </View>
     )
 }

@@ -7,8 +7,8 @@ import {
     View,
     Text,
 } from 'react-native';
-import { HSectionList } from 'react-native-head-tab-view'
-import staticData from '../config/staticData'
+import { HSectionList } from 'react-native-collapsible-header-tab-view';
+import staticData from '../config/staticData';
 
 interface Props {
     index: number

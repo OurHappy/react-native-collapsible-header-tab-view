@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native'
 import Animated, { cancelAnimation, useSharedValue, useAnimatedStyle, useAnimatedReaction, useDerivedValue, withRepeat, withTiming, Easing } from 'react-native-reanimated'
-import { RefreshControlProps } from 'react-native-head-tab-view'
+import type { RefreshControlProps } from 'react-native-collapsible-header-tab-view';
 import staticData from '../config/staticData'
 const config = {
     duration: 1000,
@@ -29,7 +29,7 @@ const CustomRefreshControl: React.FC<RefreshControlProps> = ({
     }, (isStart) => {
         if (!isStart) return
         cancelAnimation(rotateValue)
-        
+
     })
 
     useAnimatedReaction(() => {

@@ -1,10 +1,9 @@
 export enum TabViewType {
-    tabview,
-    default,
+  tabview,
+  default,
 }
 
 export enum EnableSnapType {
-    disableSnap,
-    enableSnap,
+  disableSnap,
+  enableSnap,
 }
-
