@@ -27,11 +27,6 @@ export default {
       description: 'Get scrollTrans using the makeScrollTrans function',
       page: 'ExampleHeaderAnimated',
     },
-    {
-      title: 'ExampleCarouselHeader.',
-      description: 'The header contains the Carousel component',
-      page: 'ExampleCarouselHeader',
-    },
   ],
   homeConfig: [
     {
