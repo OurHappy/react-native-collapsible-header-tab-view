@@ -106,12 +106,11 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       !tabsIsWorking.value &&
       !isRefreshing.value &&
       !isRefreshingWithAnimation.value &&
-      curIndexValue.value === index
+      curIndexValue === index
     );
-  });
+  }, []);
 
-  const canSnapFunc = useCallback(() => {
-    'worklet';
+  const canSnapFunc = useDerivedValue(() => {
     return (
       needSnap.value &&
       !isTouchTabs.value &&
@@ -120,14 +119,25 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       !isRefreshingWithAnimation.value &&
       !tabsIsWorking.value
     );
-  }, [
-    isRefreshing,
-    isRefreshingWithAnimation,
-    isSlidingHeader,
-    isTouchTabs,
-    needSnap,
-    tabsIsWorking,
-  ]);
+  }, []);
+  // const canSnapFunc = useCallback(() => {
+  //   'worklet';
+  //   return (
+  //     needSnap.value &&
+  //     !isTouchTabs.value &&
+  //     !isSlidingHeader.value &&
+  //     !isRefreshing.value &&
+  //     !isRefreshingWithAnimation.value &&
+  //     !tabsIsWorking.value
+  //   );
+  // }, [
+  //   isRefreshing,
+  //   isRefreshingWithAnimation,
+  //   isSlidingHeader,
+  //   isTouchTabs,
+  //   needSnap,
+  //   tabsIsWorking,
+  // ]);
 
   const refreshValue = useDerivedValue(() => {
     if (isRefreshing.value && isRefreshingWithAnimation.value) {
@@ -159,7 +169,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
   const updateShareValue = useCallback(
     (value: number) => {
       'worklet';
-      if (curIndexValue.value !== index) {
+      if (curIndexValue !== index) {
         return;
       }
       //Avoid causing updates to the ShareAnimatedValue after the drop-down has finished
@@ -169,7 +179,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       shareAnimatedValue.value = value;
     },
     [
-      curIndexValue.value,
+      curIndexValue,
       shareAnimatedValue,
       index,
       isRefreshing.value,
@@ -183,13 +193,13 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       return;
     }
     cancelAnimation(isScrolling);
-    if (canSnapFunc()) {
+    if (canSnapFunc.value) {
       isScrolling.value = 1;
       isScrolling.value = withTiming(
         0,
         { duration: scrollingCheckDuration },
         (isFinished) => {
-          if (isFinished && canSnapFunc()) {
+          if (isFinished && canSnapFunc.value) {
             needSnap.value = false;
             snapAfterGlideOver({
               sceneRef: _scrollView,

@@ -8,10 +8,7 @@ import type {
 import type { default as Reanimated2 } from 'react-native-reanimated';
 export interface CollapsibleHeaderProps {
   headerHeight?: number;
-  renderScrollHeader: () =>
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null;
+  renderScrollHeader: () => React.ReactElement | null;
   tabbarHeight?: number;
   frozeTop?: number;
   overflowHeight?: number;
@@ -87,7 +84,8 @@ export interface IHeaderContext {
   expectHeight: number;
   tabsRefreshEnabled: boolean;
   refHasChanged: (ref: React.RefObject<any>) => void;
-  curIndexValue: Reanimated2.SharedValue<number>;
+  curIndexValue: number;
+  // curIndexValue: Reanimated2.SharedValue<number>;
   updateSceneInfo: (e: updateSceneInfoType) => void;
   enableSnap: boolean;
   scrollingCheckDuration: number;

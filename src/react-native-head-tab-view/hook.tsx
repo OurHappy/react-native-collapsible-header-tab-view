@@ -80,7 +80,7 @@ export const useSyncInitialPosition = (_scrollView: any) => {
   };
 };
 
-export const useSceneInfo = (curIndexValue: Animated.SharedValue<number>) => {
+export const useSceneInfo = (curIndexValue: number) => {
   //Are all the fields on the scene ready
   const sceneIsReady = useSharedValue<{ [index: number]: boolean }>({});
   const [sceneScrollEnabledValue, setSceneScrollEnabledValue] = useState<{
@@ -229,7 +229,7 @@ export const useSceneInfo = (curIndexValue: Animated.SharedValue<number>) => {
     ]
   );
   const updateIsReady = useCallback(() => {
-    const mIndex = curIndexValue.value;
+    const mIndex = curIndexValue;
     if (sceneIsReady.value[mIndex]) {
       return;
     }
@@ -255,7 +255,7 @@ export const useSceneInfo = (curIndexValue: Animated.SharedValue<number>) => {
    */
   useAnimatedReaction(
     () => {
-      return curIndexValue.value;
+      return curIndexValue;
     },
     () => {
       runOnJS(updateIsReady)();

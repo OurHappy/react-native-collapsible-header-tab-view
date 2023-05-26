@@ -65,7 +65,8 @@ const GestureContainer: React.ForwardRefRenderFunction<
 ) => {
   //shareAnimatedValue
   const shareAnimatedValue = useSharedValue(0);
-  const curIndexValue = useSharedValue(initialPage);
+  const [curIndexValue, setCurIndexValue] = useState(initialPage);
+  // const curIndexValue = useSharedValue(initialPage);
   //snap
   const isTouchTabs: Animated.SharedValue<boolean> = useSharedValue(false);
   //layout
@@ -82,7 +83,7 @@ const GestureContainer: React.ForwardRefRenderFunction<
   const innerTapRef: React.RefObject<any> = React.useRef();
   //header slide
   const isSlidingHeader: Animated.SharedValue<boolean> = useSharedValue(false);
-  const slideIndex = useSharedValue(curIndexValue.value);
+  const slideIndex = useSharedValue(curIndexValue);
   const headerTrans = useSharedValue(0);
   //pull-refresh(tabs)
   const isDragging = useSharedValue(false);
@@ -90,7 +91,7 @@ const GestureContainer: React.ForwardRefRenderFunction<
   const tabsRefreshTrans = useSharedValue(refreshHeight);
   const tabsIsRefreshing = useSharedValue(false);
   const tabsIsRefreshingWithAnimation = useSharedValue(false);
-  const dragIndex = useSharedValue(curIndexValue.value);
+  const dragIndex = useSharedValue(curIndexValue);
   //scene
   const {
     childScrollRef,
@@ -113,75 +114,105 @@ const GestureContainer: React.ForwardRefRenderFunction<
       tabsIsRefreshing.value ||
       tabsIsRefreshingWithAnimation.value
     );
-  });
+  }, []);
 
-  const calcHeight = useMemo(
-    () => headerHeight - frozeTop,
-    [headerHeight, frozeTop]
-  );
+  const calcHeight = headerHeight - frozeTop;
+  // const calcHeight = useMemo(
+  //   () => headerHeight - frozeTop,
+  //   [headerHeight, frozeTop]
+  // );
 
-  const tabsHasRefresh = useCallback(() => {
-    'worklet';
-    return onStartRefresh !== undefined;
-  }, [onStartRefresh]);
+  const tabsHasRefresh = typeof onStartRefresh !== 'undefined';
+  // const tabsHasRefresh = useCallback(() => {
+  //   'worklet';
+  //   return typeof onStartRefresh !== 'undefined';
+  // }, [onStartRefresh]);
 
-  const sceneHasRefresh = useCallback(() => {
-    'worklet';
-    return sceneCanPullRefresh[curIndexValue.value] === true;
-  }, [sceneCanPullRefresh, curIndexValue.value]);
+  const sceneHasRefresh = sceneCanPullRefresh[curIndexValue] === true;
+  // const sceneHasRefresh = useCallback(() => {
+  //   'worklet';
+  //   return sceneCanPullRefresh[curIndexValue] === true;
+  // }, [sceneCanPullRefresh, curIndexValue]);
 
-  const getTabsIsRefreshing = useCallback(
-    (isStrict: boolean = false) => {
-      'worklet';
-      if (!tabsHasRefresh()) {
-        return false;
-      }
+  const areTabsRefreshing = useDerivedValue(() => {
+    if (!tabsHasRefresh) {
+      return false;
+    }
 
-      if (isStrict) {
-        return tabsIsRefreshing.value && tabsIsRefreshingWithAnimation.value;
-      }
-      return tabsIsRefreshing.value && tabsIsRefreshingWithAnimation.value;
-    },
-    [tabsHasRefresh, tabsIsRefreshing, tabsIsRefreshingWithAnimation]
-  );
+    return tabsIsRefreshing.value || tabsIsRefreshingWithAnimation.value;
+  }, [tabsHasRefresh]);
 
-  const getSceneIsRefreshing = useCallback(
-    (isStrict: boolean = false) => {
-      'worklet';
-      if (
-        !sceneHasRefresh() ||
-        !sceneIsRefreshing[curIndexValue.value] ||
-        !sceneIsRefreshingWithAnimation[curIndexValue.value]
-      ) {
-        return false;
-      }
+  // const getTabsIsRefreshing = useCallback(
+  //   (isStrict: boolean = false) => {
+  //     'worklet';
+  //     if (!tabsHasRefresh) {
+  //       return false;
+  //     }
 
-      if (isStrict) {
-        return (
-          sceneIsRefreshing[curIndexValue.value].value &&
-          sceneIsRefreshingWithAnimation[curIndexValue.value].value
-        );
-      }
-      return (
-        sceneIsRefreshing[curIndexValue.value].value ||
-        sceneIsRefreshingWithAnimation[curIndexValue.value].value
-      );
-    },
-    [
-      sceneHasRefresh,
-      sceneIsRefreshing,
-      curIndexValue.value,
-      sceneIsRefreshingWithAnimation,
-    ]
-  );
+  //     if (isStrict) {
+  //       return tabsIsRefreshing.value && tabsIsRefreshingWithAnimation.value;
+  //     }
+  //     return tabsIsRefreshing.value && tabsIsRefreshingWithAnimation.value;
+  //   },
+  //   [tabsHasRefresh, tabsIsRefreshing, tabsIsRefreshingWithAnimation]
+  // );
 
-  const getIsRefreshing = useCallback(
-    (isStrict: boolean = false) => {
-      'worklet';
-      return getTabsIsRefreshing(isStrict) || getSceneIsRefreshing(isStrict);
-    },
-    [getTabsIsRefreshing, getSceneIsRefreshing]
-  );
+  const isCurSceneRefreshing = useDerivedValue(() => {
+    if (
+      !sceneHasRefresh ||
+      !sceneIsRefreshing[curIndexValue] ||
+      !sceneIsRefreshingWithAnimation[curIndexValue]
+    ) {
+      return false;
+    }
+
+    return (
+      sceneIsRefreshing[curIndexValue]?.value ||
+      sceneIsRefreshingWithAnimation[curIndexValue]?.value
+    );
+  }, [sceneHasRefresh]);
+
+  // const getSceneIsRefreshing = useCallback(
+  //   (isStrict: boolean = false) => {
+  //     'worklet';
+  //     if (
+  //       !sceneHasRefresh ||
+  //       !sceneIsRefreshing[curIndexValue] ||
+  //       !sceneIsRefreshingWithAnimation[curIndexValue]
+  //     ) {
+  //       return false;
+  //     }
+
+  //     if (isStrict) {
+  //       return (
+  //         sceneIsRefreshing[curIndexValue].value &&
+  //         sceneIsRefreshingWithAnimation[curIndexValue].value
+  //       );
+  //     }
+  //     return (
+  //       sceneIsRefreshing[curIndexValue].value ||
+  //       sceneIsRefreshingWithAnimation[curIndexValue].value
+  //     );
+  //   },
+  //   [
+  //     sceneHasRefresh,
+  //     sceneIsRefreshing,
+  //     curIndexValue,
+  //     sceneIsRefreshingWithAnimation,
+  //   ]
+  // );
+
+  const isRefreshing = useDerivedValue(() => {
+    return areTabsRefreshing.value || isCurSceneRefreshing.value;
+  }, []);
+
+  // const getIsRefreshing = useCallback(
+  //   (isStrict: boolean = false) => {
+  //     'worklet';
+  //     return areTabsRefreshing || isCurSceneRefreshing;
+  //   },
+  //   [areTabsRefreshing, isCurSceneRefreshing]
+  // );
 
   const animateTabsToRefresh = useCallback(
     (isToRefresh: boolean) => {
@@ -220,35 +251,35 @@ const GestureContainer: React.ForwardRefRenderFunction<
 
   const stopScrollView = () => {
     'worklet';
-    if (!sceneIsReady.value[curIndexValue.value]) {
+    if (!sceneIsReady.value[curIndexValue]) {
       return;
     }
-    if (getIsRefreshing(false)) {
+    if (isRefreshing.value) {
       return;
     }
     mScrollTo(
-      childScrollRef[curIndexValue.value],
+      childScrollRef[curIndexValue],
       0,
-      childScrollYTrans[curIndexValue.value].value + 0.1,
+      childScrollYTrans[curIndexValue].value + 0.1,
       false
     );
   };
 
   const stopAllAnimation = useCallback(() => {
     'worklet';
-    if (!sceneIsReady.value[curIndexValue.value]) {
+    if (!sceneIsReady.value[curIndexValue]) {
       return;
     }
     isTouchTabs.value = true;
     cancelAnimation(headerTrans);
     slideIndex.value = -1;
     dragIndex.value = -1;
-    if (getTabsIsRefreshing(true)) {
+    if (areTabsRefreshing) {
       cancelAnimation(tabsRefreshTrans);
     }
 
-    if (getSceneIsRefreshing(true)) {
-      cancelAnimation(sceneRefreshTrans[curIndexValue.value]);
+    if (isCurSceneRefreshing.value) {
+      cancelAnimation(sceneRefreshTrans[curIndexValue]);
     }
     const needIgnore = (value: number) => {
       return value >= calcHeight && shareAnimatedValue.value >= calcHeight;
@@ -282,25 +313,25 @@ const GestureContainer: React.ForwardRefRenderFunction<
 
     for (const key in childScrollRef) {
       if (Object.prototype.hasOwnProperty.call(childScrollRef, key)) {
-        if (parseInt(key) === curIndexValue.value) {
+        if (parseInt(key) === curIndexValue) {
           continue;
         }
         handleSceneSync(parseInt(key));
       }
     }
   }, [
-    sceneIsReady.value,
-    curIndexValue.value,
+    sceneIsReady,
+    curIndexValue,
     isTouchTabs,
     headerTrans,
     slideIndex,
     dragIndex,
-    getTabsIsRefreshing,
-    getSceneIsRefreshing,
+    areTabsRefreshing,
+    isCurSceneRefreshing,
     tabsRefreshTrans,
     sceneRefreshTrans,
     calcHeight,
-    shareAnimatedValue.value,
+    shareAnimatedValue,
     childScrollYTrans,
     sceneIsRefreshing,
     sceneIsRefreshingWithAnimation,
@@ -328,12 +359,21 @@ const GestureContainer: React.ForwardRefRenderFunction<
       },
     });
 
-  const onSceneStartRefresh = useCallback(() => {
-    'worklet';
-    if (sceneRefreshCallBack[curIndexValue.value]) {
-      runOnJS(sceneRefreshCallBack[curIndexValue.value])(true);
-    }
-  }, [curIndexValue.value, sceneRefreshCallBack]);
+  const onSceneStartRefresh = () => sceneRefreshCallBack[curIndexValue]?.(true);
+  // const onSceneStartRefresh = useCallback(() => {
+  //   'worklet';
+  //   if (sceneRefreshCallBack[curIndexValue]) {
+  //     runOnJS(sceneRefreshCallBack[curIndexValue])(true);
+  //   }
+  // }, [curIndexValue, sceneRefreshCallBack]);
+
+  const onSceneEndRefresh = () => sceneRefreshCallBack[curIndexValue]?.(false);
+  // const onSceneEndRefresh = useCallback(() => {
+  //   'worklet';
+  //   if (sceneRefreshCallBack[curIndexValue]) {
+  //     runOnJS(sceneRefreshCallBack[curIndexValue])(false);
+  //   }
+  // }, [curIndexValue, sceneRefreshCallBack]);
 
   const onTabsStartRefresh = useCallback(() => {
     'worklet';
@@ -345,13 +385,6 @@ const GestureContainer: React.ForwardRefRenderFunction<
     animateTabsToRefresh(false);
   }, [animateTabsToRefresh]);
 
-  const onSceneEndRefresh = useCallback(() => {
-    'worklet';
-    if (sceneRefreshCallBack[curIndexValue.value]) {
-      runOnJS(sceneRefreshCallBack[curIndexValue.value])(false);
-    }
-  }, [curIndexValue.value, sceneRefreshCallBack]);
-
   const gestureHandler = useAnimatedGestureHandler({
     onStart: () => {
       if (!__IOS) {
@@ -362,23 +395,23 @@ const GestureContainer: React.ForwardRefRenderFunction<
       isTouchTabs.value = false;
     },
     onActive: (event, ctx: GesturePanContext) => {
-      if (!sceneIsReady.value[curIndexValue.value]) {
+      if (!sceneIsReady.value[curIndexValue]) {
         return;
       }
-      if (!tabsHasRefresh() && !sceneHasRefresh()) {
+      if (!tabsHasRefresh && !sceneHasRefresh) {
         return;
       }
 
       const onReadyToActive = (isPulling: boolean) => {
-        dragIndex.value = curIndexValue.value;
+        dragIndex.value = curIndexValue;
         if (isPulling) {
           return event.translationY;
         } else {
           return onStartRefresh
             ? refreshHeight -
                 tabsTrans.value +
-                childScrollYTrans[curIndexValue.value].value
-            : childScrollYTrans[curIndexValue.value].value;
+                childScrollYTrans[curIndexValue].value
+            : childScrollYTrans[curIndexValue].value;
         }
       };
       onStartRefresh
@@ -387,26 +420,26 @@ const GestureContainer: React.ForwardRefRenderFunction<
             isRefreshingWithAnimation: tabsIsRefreshingWithAnimation,
             transRefreshing: tabsRefreshTrans,
             refreshHeight,
-            shareAnimatedValue: childScrollYTrans[curIndexValue.value],
+            shareAnimatedValue: childScrollYTrans[curIndexValue],
             onReadyToActive,
             isDragging,
           })(event, ctx)
         : onActiveRefreshImpl({
-            isRefreshing: sceneIsRefreshing[curIndexValue.value],
+            isRefreshing: sceneIsRefreshing[curIndexValue],
             isRefreshingWithAnimation:
-              sceneIsRefreshingWithAnimation[curIndexValue.value],
-            transRefreshing: sceneRefreshTrans[curIndexValue.value],
+              sceneIsRefreshingWithAnimation[curIndexValue],
+            transRefreshing: sceneRefreshTrans[curIndexValue],
             refreshHeight,
-            shareAnimatedValue: childScrollYTrans[curIndexValue.value],
+            shareAnimatedValue: childScrollYTrans[curIndexValue],
             onReadyToActive,
-            isDragging: sceneIsDragging[curIndexValue.value],
+            isDragging: sceneIsDragging[curIndexValue],
           })(event, ctx);
     },
     onEnd: (event, ctx: GesturePanContext) => {
-      if (!sceneIsReady.value[curIndexValue.value]) {
+      if (!sceneIsReady.value[curIndexValue]) {
         return;
       }
-      if (!tabsHasRefresh() && !sceneHasRefresh()) {
+      if (!tabsHasRefresh && !sceneHasRefresh) {
         return;
       }
 
@@ -420,20 +453,20 @@ const GestureContainer: React.ForwardRefRenderFunction<
             isDragging,
           })(event, ctx)
         : onEndRefreshImpl({
-            isRefreshing: sceneIsRefreshing[curIndexValue.value],
+            isRefreshing: sceneIsRefreshing[curIndexValue],
             isRefreshingWithAnimation:
-              sceneIsRefreshingWithAnimation[curIndexValue.value],
-            transRefreshing: sceneRefreshTrans[curIndexValue.value],
+              sceneIsRefreshingWithAnimation[curIndexValue],
+            transRefreshing: sceneRefreshTrans[curIndexValue],
             onReadyRefresh: onSceneStartRefresh,
             onEndRefresh: onSceneEndRefresh,
-            isDragging: sceneIsDragging[curIndexValue.value],
+            isDragging: sceneIsDragging[curIndexValue],
           })(event, ctx);
     },
   });
 
   const gestureHandlerHeader = useAnimatedGestureHandler({
     onStart: () => {
-      if (getIsRefreshing()) {
+      if (isRefreshing.value) {
         return;
       }
       if (!__IOS) {
@@ -441,16 +474,16 @@ const GestureContainer: React.ForwardRefRenderFunction<
       }
     },
     onActive: (event, ctx: GesturePanContext) => {
-      if (!sceneIsReady.value[curIndexValue.value]) {
+      if (!sceneIsReady.value[curIndexValue]) {
         return;
       }
-      if (!sceneScrollEnabledValue[curIndexValue.value].value) {
+      if (!sceneScrollEnabledValue[curIndexValue].value) {
         isSlidingHeader.value = false;
         return;
       }
       //Now stop the ScrollView with the stopScrollView function
       //However, this approach may fail on Android, so disable Slide at this point
-      if (sceneIsLosingMomentum[curIndexValue.value].value) {
+      if (sceneIsLosingMomentum[curIndexValue].value) {
         return;
       }
       toRunSlide({
@@ -459,18 +492,16 @@ const GestureContainer: React.ForwardRefRenderFunction<
         isActive: isSlidingHeader,
         ctx,
         getStartY: () => {
-          slideIndex.value = curIndexValue.value;
-          return (
-            childScrollYTrans[curIndexValue.value].value + event.translationY
-          );
+          slideIndex.value = curIndexValue;
+          return childScrollYTrans[curIndexValue].value + event.translationY;
         },
       });
     },
     onEnd: (event, ctx: GesturePanContext) => {
-      if (!sceneIsReady.value[curIndexValue.value]) {
+      if (!sceneIsReady.value[curIndexValue]) {
         return;
       }
-      if (!sceneScrollEnabledValue[curIndexValue.value].value) {
+      if (!sceneScrollEnabledValue[curIndexValue].value) {
         return;
       }
       if (isSlidingHeader.value === false) {
@@ -582,7 +613,7 @@ const GestureContainer: React.ForwardRefRenderFunction<
       return (
         tabsRefreshTrans.value < refreshHeight &&
         shareAnimatedValue.value !== 0 &&
-        dragIndex.value === curIndexValue.value &&
+        dragIndex.value === curIndexValue &&
         (isDragging.value || tabsIsRefreshingWithAnimation.value)
       );
     },
@@ -590,7 +621,7 @@ const GestureContainer: React.ForwardRefRenderFunction<
       if (!isStart) {
         return;
       }
-      mScrollTo(childScrollRef[curIndexValue.value], 0, 0, false);
+      mScrollTo(childScrollRef[curIndexValue], 0, 0, false);
     },
     [
       tabsRefreshTrans,
@@ -610,7 +641,7 @@ const GestureContainer: React.ForwardRefRenderFunction<
     () => {
       return (
         tabsRefreshTrans.value > refreshHeight &&
-        dragIndex.value === curIndexValue.value &&
+        dragIndex.value === curIndexValue &&
         tabsIsRefreshingWithAnimation.value
       );
     },
@@ -618,14 +649,14 @@ const GestureContainer: React.ForwardRefRenderFunction<
       if (!isStart) {
         return;
       }
-      if (!childScrollRef[curIndexValue.value]) {
+      if (!childScrollRef[curIndexValue]) {
         return;
       }
       const transY = tabsRefreshTrans.value - refreshHeight;
-      if (childScrollYTrans[curIndexValue.value].value === transY) {
+      if (childScrollYTrans[curIndexValue].value === transY) {
         return;
       }
-      mScrollTo(childScrollRef[curIndexValue.value], 0, transY, false);
+      mScrollTo(childScrollRef[curIndexValue], 0, transY, false);
     },
     [
       tabsRefreshTrans,
@@ -642,7 +673,7 @@ const GestureContainer: React.ForwardRefRenderFunction<
     () => {
       return (
         headerTrans &&
-        slideIndex.value === curIndexValue.value &&
+        slideIndex.value === curIndexValue &&
         isSlidingHeader.value
       );
     },
@@ -650,15 +681,15 @@ const GestureContainer: React.ForwardRefRenderFunction<
       if (!start) {
         return;
       }
-      if (!childScrollRef[curIndexValue.value]) {
+      if (!childScrollRef[curIndexValue]) {
         return;
       }
-      if (childScrollYTrans[curIndexValue.value].value === headerTrans.value) {
+      if (childScrollYTrans[curIndexValue].value === headerTrans.value) {
         return;
       }
 
       mScrollTo(
-        childScrollRef[curIndexValue.value],
+        childScrollRef[curIndexValue],
         0,
         headerTrans.value || 0,
         false
@@ -764,11 +795,12 @@ const GestureContainer: React.ForwardRefRenderFunction<
   useImperativeHandle(
     forwardedRef,
     () => ({
-      setCurrentIndex: (index: number) => {
-        curIndexValue.value = index;
-      },
+      setCurrentIndex: setCurIndexValue,
+      // setCurrentIndex: (index: number) => {
+      //   curIndexValue.value = index;
+      // },
     }),
-    [curIndexValue]
+    [setCurIndexValue]
   );
 
   const contentContainer = (
