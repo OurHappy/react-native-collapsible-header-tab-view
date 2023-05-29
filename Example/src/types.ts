@@ -1,10 +1,11 @@
 export enum TabViewType {
-    tabview,
-    default,
+  tabview,
+  default,
 }
 
 export enum EnableSnapType {
-    disableSnap,
-    enableSnap,
+  disableSnap,
+  enableSnap,
 }
 
+export type Timer = ReturnType<typeof setTimeout>;

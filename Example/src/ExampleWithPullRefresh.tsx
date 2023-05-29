@@ -1,25 +1,15 @@
-
 import React from 'react';
-import {
-    View,
-} from 'react-native';
-import { ScrollableTabViewContainer, TabViewContainer } from './component/TabViewBase'
-import { TabViewType } from './types'
-import { useHomeConfig } from './hook'
-import { styles } from './styles'
+import {View} from 'react-native';
+import {TabViewContainer} from './component/TabViewBase';
+import {useHomeConfig} from './hook';
+import {styles} from './styles';
 
-const ExampleWithPullRefresh: React.FC<any> = (props) => {
-    const { tabviewType, enableSnap } = useHomeConfig(props)
-    return (
-        <View style={styles.container}>
-            {
-                tabviewType === TabViewType.default ?
-                    <ScrollableTabViewContainer
-                        sceneRefreshEnabled={true} enableSnap={enableSnap}/> :
-                    <TabViewContainer
-                        sceneRefreshEnabled={true} enableSnap={enableSnap}/>
-            }
-        </View>
-    )
-}
-export default ExampleWithPullRefresh
+const ExampleWithPullRefresh: React.FC<any> = props => {
+  const {enableSnap} = useHomeConfig(props);
+  return (
+    <View style={styles.container}>
+      <TabViewContainer sceneRefreshEnabled={true} enableSnap={enableSnap} />
+    </View>
+  );
+};
+export default ExampleWithPullRefresh;
